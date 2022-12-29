@@ -299,6 +299,7 @@ td {
   width: 20%;
   overflow: hidden;
   position: relative;
+  padding: 0;
 }
 tr {
   height: 6.4%;

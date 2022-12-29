@@ -113,14 +113,14 @@ window.onload = function () {
   for (let out of table.getElementsByClassName("bonus_output")) {
     out.innerHTML = ""
   }
-  document.getElementById("save").onclick = function() {save(prompt("Name: "))}
+  document.getElementById("save").onclick = function() {save(prompt("Name: ").trim())}
   document.getElementById("load").onclick = load
 }
 
 
 function save(name) {
   // const name = prompt("Name: ")
-  if (name == null) {return;}
+  if (name == null || name == "") {return;}
   const values = [];
   const inputs = document.querySelectorAll('input:not([type="button"])');
   for (const input of inputs) {values.push(input.value)}
@@ -140,8 +140,8 @@ function load() {
     options += `${key}\n`;
   }
   // Prompt the user to select a name from the options
-  const name = prompt(options + "Type Del:Name to delete");
-  if (name == null) {return;}
+  const name = prompt(options + "Type Del:Name to delete").trim();
+  if (name == null || name == "") {return;}
 
   if (name.startsWith("Del:")) {
     // Get the name of the item to delete from the input string
