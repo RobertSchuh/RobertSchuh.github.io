@@ -173,4 +173,3 @@ function load() {
   calculate_all()
   // console.log(values, str)
 }
-//test
