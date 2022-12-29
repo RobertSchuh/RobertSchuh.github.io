@@ -52,13 +52,61 @@ function calculate_all() {
         x = parseInt("0"+element.innerHTML.replace("+",""))
       }
       total_sum += x; intermediary_sum += x
-      if (element.className == "output") {
+      if (element.classList.contains('output')) {
         element.innerHTML = intermediary_sum; intermediary_sum = 0
       }
     }
     last.innerHTML = total_sum
   }
+
+  for (let row of table.getElementsByTagName("tr")) {
+    if (row.className != "vspace") {
+      // Get all the <p> elements in the row
+      const outputs = row.querySelectorAll('.output');
+
+      // Initialize a variable to store the highest number
+      let highest = -Infinity;
+
+      // Initialize a variable to store the <p> element with the highest number
+      let highestOutput = null;
+
+      // Iterate through the <p> elements
+      for (const output of outputs) {
+        // Convert the innerHTML to a number
+        const value = Number(output.innerHTML);
+        // If the value is higher than the current highest, update the highest and highestOutput variables
+        if (value > highest) {
+          highest = value;
+          highestOutput = output;
+        }
+      }
+
+      // Remove the "highlight" class from all the <p> elements
+      for (const output of outputs) {
+        output.classList.remove('highlight');
+      }
+
+      // Initialize a variable to store the number of <p> elements with the highest number
+      let highestCount = 0;
+
+      // Iterate through the <p> elements again
+      for (const output of outputs) {
+        // Convert the innerHTML to a number
+        const value = Number(output.innerHTML);
+        // If the value is equal to the highest number, increment the highestCount variable
+        if (value == highest) {
+          highestCount++;
+        }
+      }
+
+      // If there is only one <p> element with the highest number, add the "highlight" class to it
+      if (highestCount == 1) {
+        highestOutput.classList.add('highlight');
+      }
+    }
+  }
 }
+
 
 
 function max_scoring(values) {

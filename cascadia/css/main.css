@@ -334,3 +334,7 @@ input {
   align: center;
   text-align: center;
 }
+
+.highlight {
+  color: #8b0000;
+}
