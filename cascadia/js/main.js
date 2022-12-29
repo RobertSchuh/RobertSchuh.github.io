@@ -118,7 +118,7 @@ function save() {
   const name = prompt("Name: ")
   if (name == null) {return;}
   const values = [];
-  const inputs = document.querySelectorAll('input[type="number"]');
+  const inputs = document.querySelectorAll('input');
   for (const input of inputs) {values.push(input.value)}
   const bouts = document.querySelectorAll('.bonus_output');
   for (const bout of bouts) {values.push(bout.innerHTML)}
@@ -155,7 +155,7 @@ function load() {
 
   const values = JSON.parse(str);
 
-  const inputs = document.querySelectorAll('input[type="number"]');
+  const inputs = document.querySelectorAll('input');
   for (let i = 0; i < inputs.length; i++) {inputs[i].value = values[i]}
   const bouts = document.querySelectorAll('.bonus_output');
   for (let i = 0; i < bouts.length; i++) {bouts[i].innerHTML = values[i+inputs.length]}
