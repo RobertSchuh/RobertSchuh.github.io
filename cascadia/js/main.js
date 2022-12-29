@@ -1,6 +1,8 @@
 
-function calculate_all() {
-  if (this.value == "" || !(parseInt(this.value) >= 0)) {this.value = "0"}
+function update_input() {
+  if (this.value == "" || !(parseInt(this.value) >= 0)) {
+    this.value = "0"
+  }
   this.value = parseInt(this.value)
 
   if (this.parentNode.getElementsByClassName("bonus_output").length > 0) {
@@ -18,7 +20,11 @@ function calculate_all() {
       outputs[i].innerHTML = ("+" + results[i]).replace("+0", "")
     }
   }
+  calculate_all()
+  save("auto")
+}
 
+function calculate_all() {
   const table = document.getElementById("table-container").getElementsByTagName("table")[0]
   let columns = [[],[],[],[]]
 
@@ -52,8 +58,6 @@ function calculate_all() {
     }
     last.innerHTML = total_sum
   }
-
-
 }
 
 
@@ -98,7 +102,7 @@ window.onload = function () {
   for (let inp of table.getElementsByTagName("input")) {
     if (inp.type == "number") {
       inp.value = "0";
-      inp.onchange = calculate_all;
+      inp.onchange = update_input;
       inp.onfocus = function() {if (this.value=="0") {this.value = ""}}
       inp.onblur = function() {if (this.value=="") {this.value = "0"}}
     }
@@ -109,16 +113,16 @@ window.onload = function () {
   for (let out of table.getElementsByClassName("bonus_output")) {
     out.innerHTML = ""
   }
-  document.getElementById("save").onclick = save
+  document.getElementById("save").onclick = function() {save(prompt("Name: "))}
   document.getElementById("load").onclick = load
 }
 
 
-function save() {
-  const name = prompt("Name: ")
+function save(name) {
+  // const name = prompt("Name: ")
   if (name == null) {return;}
   const values = [];
-  const inputs = document.querySelectorAll('input');
+  const inputs = document.querySelectorAll('input:not([type="button"])');
   for (const input of inputs) {values.push(input.value)}
   const bouts = document.querySelectorAll('.bonus_output');
   for (const bout of bouts) {values.push(bout.innerHTML)}
@@ -142,23 +146,30 @@ function load() {
   if (name.startsWith("Del:")) {
     // Get the name of the item to delete from the input string
     const deleteName = name.substring(4);
-    localStorage.removeItem(deleteName);
-    alert(`Item "${deleteName}" deleted.`);
+    // Check if the item exists in local storage
+    if (localStorage.getItem(deleteName) !== null) {
+      // If the item exists, delete it and show a confirmation message
+      localStorage.removeItem(deleteName);
+      alert(`Item "${deleteName}" deleted.`);
+    } else {
+      // If the item does not exist, show an error message
+      alert(`Error: Item "${deleteName}" not found in local storage.`);
+    }
     return;
   }
 
   const str = localStorage.getItem(name);
   if (str === null) {
-    alert("Error: Name not found in local storage.");
+    alert(`Error: Item "${name}" not found in local storage.`);
     return;
   }
 
   const values = JSON.parse(str);
 
-  const inputs = document.querySelectorAll('input');
+  const inputs = document.querySelectorAll('input:not([type="button"])');
   for (let i = 0; i < inputs.length; i++) {inputs[i].value = values[i]}
   const bouts = document.querySelectorAll('.bonus_output');
   for (let i = 0; i < bouts.length; i++) {bouts[i].innerHTML = values[i+inputs.length]}
-  calculate_all.call(inputs[0])
+  calculate_all()
   // console.log(values, str)
 }
