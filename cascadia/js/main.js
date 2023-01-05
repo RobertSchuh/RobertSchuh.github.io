@@ -4,28 +4,43 @@ function update_input() {
     this.value = "0"
   }
   this.value = parseInt(this.value)
+  const table = document.getElementById("table-container").getElementsByTagName("table")[0]
 
-  if (this.parentNode.getElementsByClassName("bonus_output").length > 0) {
-    let results;
-    let outputs;
-    let row = this.parentNode.parentNode;
-    let values = [];
-    for (let inp of row.getElementsByTagName("input")) {
-      values.push(parseInt(inp.value))
-    }
-    results = max_scoring(values)
-    outputs = row.getElementsByClassName("bonus_output")
-    console.assert(outputs.length == results.length)
-    for (let i = 0; i < results.length; i++) {
-      outputs[i].innerHTML = ("+" + results[i]).replace("+0", "")
+  let num_players = count_players(table)
+  console.log(num_players)
+
+  for (let row of table.getElementsByTagName("tr")) {
+    if (row.className != "vspace") {
+      if (row.getElementsByClassName("bonus_output").length > 0) {
+        let results;
+        let outputs;
+        let values = [];
+        for (let inp of row.getElementsByTagName("input")) {
+          values.push(parseInt(inp.value))
+        }
+        if (num_players == 2) {
+          results = max_scoring_2players(values)
+        }
+        else if (num_players == 1) {
+          results = max_scoring_1player(values)
+        }
+        else {
+          results = max_scoring(values)
+        }
+        outputs = row.getElementsByClassName("bonus_output")
+        console.assert(outputs.length == results.length)
+        for (let i = 0; i < results.length; i++) {
+          outputs[i].innerHTML = ("+" + results[i]).replace("+0", "")
+        }
+      }
     }
   }
-  calculate_all()
+  calculate_all(table)
+  highlighter(table)
   save("auto")
 }
 
-function calculate_all() {
-  const table = document.getElementById("table-container").getElementsByTagName("table")[0]
+function calculate_all(table) {
   let columns = [[],[],[],[]]
 
   for (let row of table.getElementsByTagName("tr")) {
@@ -58,7 +73,39 @@ function calculate_all() {
     }
     last.innerHTML = total_sum
   }
+}
 
+
+function count_players(table) {
+  let columns = [[],[],[],[]]
+
+  for (let row of table.getElementsByTagName("tr")) {
+    if (row.className != "vspace") {
+      inps = row.querySelectorAll("input[type=number]")
+      for (let i=0; i<columns.length; i++) {
+        if (inps.length == columns.length) {columns[i].push(inps[i])}
+      }
+    }
+  }
+  // console.log(columns)
+  let num_players = 0
+  for (let col of columns) {
+    let total_sum = 0
+    let last = col.pop()
+    for (let element of col) {
+      if (element.nodeName == "INPUT") {
+        total_sum += parseInt(element.value)
+      }
+    }
+    if (total_sum > 0) {
+      num_players ++
+    }
+  }
+  return num_players
+}
+
+
+function highlighter(table) {
   for (let row of table.getElementsByTagName("tr")) {
     if (row.className != "vspace") {
       // Get all the <p> elements in the row
@@ -108,7 +155,6 @@ function calculate_all() {
 }
 
 
-
 function max_scoring(values) {
   let results = [0, 0, 0, 0]
   if (JSON.stringify(results) == JSON.stringify(values)) {return results}
@@ -142,6 +188,36 @@ function max_scoring(values) {
     }
   }
   return results;
+}
+
+function max_scoring_2players(values) {
+  let results = [0, 0, 0, 0]
+  if (JSON.stringify(results) == JSON.stringify(values)) {return results}
+
+  const max = Math.max.apply(null, values)
+  // console.log(max)
+  const max_indices = []
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] === max) {max_indices.push(i)}
+  }
+  if (max_indices.length == 2) {
+    for (let idx of max_indices) {
+      results[idx] = 1
+    }
+  }
+  else if (max_indices.length == 1) {
+        results[max_indices[0]] = 2
+  }
+  return results;
+}
+
+function max_scoring_1player(values) {
+  let results = [0, 0, 0, 0]
+  if (JSON.stringify(results) == JSON.stringify(values)) {return results}
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] >= 7) {results[i] = 2}
+  }
+  return results
 }
 
 
